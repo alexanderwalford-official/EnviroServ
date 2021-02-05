@@ -72,6 +72,7 @@
   <tr>
   <!-- rows -->
     <th class="tg-0lax"><b>Date And Time</b></th>
+	<th class="tg-0lax"><b>Dust Amount</b></th>
     <th class="tg-0lax"><b>Environmental Temprature</b></th>
     <th class="tg-0lax"><b>System Temprature</b></th>
 	<th class="tg-0lax"><b>Barmoetric Temprature</b></th>
@@ -85,7 +86,22 @@
   	{% for data in data %}
   <tr>
   <!-- collums -->
-    <td class="tg-0lax">{{data.datetime}}</td>
+  
+    <td class="tg-0lax">{{data.datetime}}</td>	
+	{% if data.dustlevel < 51 %}
+	<td class="tg-0lax" style="color:green">{{data.dustlevel}} / 300 (GOOD)</td>
+	{% elif data.dustlevel > 50 and data.dustlevel < 101 %}
+	<td class="tg-0lax" style="color:yellow; background-color: black; padding: 10px;">{{data.dustlevel}} / 300 (MODERATE)</td>
+	{% elif data.dustlevel > 100 and data.dustlevel < 151 %}
+	<td class="tg-0lax" style="color:orange">{{data.dustlevel}} / 300 (UNHEALTHY FOR SOME)</td>
+	{% elif data.dustlevel > 150 and data.dustlevel < 201 %}
+	<td class="tg-0lax" style="color:red">{{data.dustlevel}} / 300 (UNHEALTHY)</td>
+	{% elif data.dustlevel > 200 and data.dustlevel < 301 %}
+	<td class="tg-0lax" style="color:purple">{{data.dustlevel}} / 300 (VERY UNHEALTHY)</td>
+	{% elif data.dustlevel > 300 %}
+	<td class="tg-0lax" style="color:darkred"><b>{{data.dustlevel}} / 300 (HAZARDOUS)</b></td>
+	{% endif %}
+	
     <td class="tg-0lax">{{data.enviro_temprature}} °C</td>
     <td class="tg-0lax">{{data.sys_temprature}} °C</td>
 	<td class="tg-0lax">{{data.barometer_temperature}} °C</td>

@@ -1,5 +1,12 @@
-# Import Sensor Data Into Database
+# Importing Sensor Data Into An SQLite Database
 # Renovate Software LTD 2021
+# Alexander Walford
+#
+# Sensors:
+# SDS011
+# SensorHub
+#
+
 
 import smbus
 import time
@@ -8,6 +15,8 @@ import os
 import sqlite3
 from sqlite3 import Error
 import psutil
+import serial
+
 
 DEVICE_BUS = 1
 DEVICE_ADDR = 0x17
@@ -55,8 +64,8 @@ def create_record(conn, savedata):
     :param ResourceLog:
     :return:
     """
-    sql = ''' INSERT INTO MainFrane_sensordata(enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection)
-              VALUES(?,?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO MainFrane_sensordata(dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection)
+              VALUES(?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, savedata)
     conn.commit()
@@ -70,6 +79,17 @@ def main():
     barometer_temperature = ""
     barometer_pressure = ""
     human_detection = ""
+    dustlevel = ""
+    
+    ser = serial.Serial('/dev/ttyUSB0')
+
+    while True:
+            data = []
+            for index in range(0,10):
+                datanum = ser.read()
+                data.append(datanum)
+                    
+            dustlevel = int.from_bytes(b''.join(data[4:6]), byteorder='little')
     
     for i in range(TEMP_REG,HUMAN_DETECT + 1):
         aReceiveBuf.append(bus.read_byte_data(DEVICE_ADDR, i))
@@ -128,7 +148,7 @@ def main():
         try:
             # create a new record
             dateandtime = datetime.datetime.now()
-            savedata = (dateandtime, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection)
+            savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection)
             create_record(conn, savedata)
             print("Saved the sensor data correctly.")
             print("System is configured to run every 10 minutes.")

@@ -15,12 +15,13 @@ class ResourceLog(models.Model):
     
 class SensorData(models.Model):
     datetime = models.DateTimeField(auto_now_add=True, null=True) 
-    enviro_temprature = models.CharField(max_length=100, default="", unique=False)
-    sys_temprature = models.CharField(max_length=100, default="", unique=False)
-    brightness = models.CharField(max_length=100, default="", unique=False)
-    humidity = models.CharField(max_length=100, default="", unique=False)
-    barometer_temperature = models.CharField(max_length=100, default="", unique=False)
-    barometer_pressure = models.CharField(max_length=100, default="", unique=False)
+    dustlevel = models.FloatField()
+    enviro_temprature = models.FloatField()
+    sys_temprature = models.FloatField()
+    brightness = models.IntegerField()
+    humidity = models.FloatField()
+    barometer_temperature = models.FloatField()
+    barometer_pressure = models.IntegerField()
     human_detection = models.CharField(max_length=100, default="", unique=False)
     
 class Diagnostic_Issue(models.Model):
