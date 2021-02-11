@@ -64,8 +64,8 @@ def create_record(conn, savedata):
     :param ResourceLog:
     :return:
     """
-    sql = ''' INSERT INTO MainFrane_sensordata(dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection)
-              VALUES(?,?,?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO MainFrame_sensordata(dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection)
+              VALUES(?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, savedata)
     conn.commit()
@@ -80,7 +80,6 @@ def main():
     barometer_pressure = ""
     human_detection = ""
     dustlevel = ""
-    
     
     for i in range(TEMP_REG,HUMAN_DETECT + 1):
         aReceiveBuf.append(bus.read_byte_data(DEVICE_ADDR, i))
