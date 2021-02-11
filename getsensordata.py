@@ -64,7 +64,7 @@ def create_record(conn, savedata):
     :param ResourceLog:
     :return:
     """
-    sql = ''' INSERT INTO MainFrame_sensordata(dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection)
+    sql = ''' INSERT INTO MainFrame_sensordata(datetime,dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection)
               VALUES(?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, savedata)
