@@ -81,15 +81,6 @@ def main():
     human_detection = ""
     dustlevel = ""
     
-    ser = serial.Serial('/dev/ttyUSB0')
-
-    while True:
-            data = []
-            for index in range(0,10):
-                datanum = ser.read()
-                data.append(datanum)
-                    
-            dustlevel = int.from_bytes(b''.join(data[4:6]), byteorder='little')
     
     for i in range(TEMP_REG,HUMAN_DETECT + 1):
         aReceiveBuf.append(bus.read_byte_data(DEVICE_ADDR, i))
@@ -112,13 +103,23 @@ def main():
         
     else :
         print("Current onboard sensor brightness = %d Lux" % (aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L]))
-        brightness = "%d" % aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L]
+        brightness = "%d" % (aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L])
         
     print("Current onboard sensor temperature = %d Celsius" % aReceiveBuf[ON_BOARD_TEMP_REG])
     sys_temprature = "%d" % aReceiveBuf[ON_BOARD_TEMP_REG]
     
     print("Current onboard sensor humidity = %d %%" % aReceiveBuf[ON_BOARD_HUMIDITY_REG])
     humidity = "%d" % aReceiveBuf[ON_BOARD_HUMIDITY_REG]
+    
+    ser = serial.Serial('/dev/ttyUSB0')
+
+    data = []
+    for index in range(0,10):
+        datanum = ser.read()
+        data.append(datanum)
+                    
+    dustlevel = int.from_bytes(b''.join(data[4:6]), byteorder='little')
+    print("Dust Level: " + str(dustlevel))
 
     if aReceiveBuf[ON_BOARD_SENSOR_ERROR] != 0 :
         print("Onboard temperature and humidity sensor data may not be up to date!")
