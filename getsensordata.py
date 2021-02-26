@@ -85,8 +85,8 @@ def main():
     
     # Get the battery level
     pijuice = PiJuice(1, 0x14)
-    batterylevel = pijuice.status.GetChargeLevel()[9] * 10 + pijuice.status.GetChargeLevel()[10]
-    print("Battery Level: " + str(batterylevel) + "%")
+    batterylevel = int(pijuice.status.GetChargeLevel()['data'])
+    print("Battery Level: " + str(pijuice.status.GetChargeLevel()['data']))
     
     # Get the SensorHub data range.
     for i in range(TEMP_REG,HUMAN_DETECT + 1):
