@@ -134,7 +134,7 @@ def main():
 
     if aReceiveBuf[HUMAN_DETECT] == 1 :
         print("Live body detected within 5 seconds!")
-        raspistill -o Desktop/movement.png -w 1920 -h 1080
+        os.system("raspistill -o Desktop/movement.png -w 1920 -h 1080") # Take a photo
         human_detection = "1"
         
     else:
