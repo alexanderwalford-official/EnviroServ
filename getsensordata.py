@@ -5,7 +5,7 @@
 # Sensors:
 # SDS011
 # SensorHub
-#
+# PiJuice
 
 
 import smbus
@@ -16,6 +16,7 @@ import sqlite3
 from sqlite3 import Error
 import psutil
 import serial
+from pijuice import PiJuice
 
 
 DEVICE_BUS = 1
@@ -53,7 +54,6 @@ def create_connection(db_file):
         conn = sqlite3.connect(db_file)
     except Error as e:
         print(e)
-
     return conn
 
 
@@ -64,14 +64,15 @@ def create_record(conn, savedata):
     :param ResourceLog:
     :return:
     """
-    sql = ''' INSERT INTO MainFrame_sensordata(datetime,dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection)
-              VALUES(?,?,?,?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO MainFrame_sensordata(datetime,dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection,batterylevel)
+              VALUES(?,?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, savedata)
     conn.commit()
     return cur.lastrowid
 
 def main():
+    # Declaration of blank, initial variables.
     enviro_temprature = ""
     sys_temprature = ""
     brightness = ""
@@ -80,10 +81,18 @@ def main():
     barometer_pressure = ""
     human_detection = ""
     dustlevel = ""
+    batterylevel = ""
     
+    # Get the battery level
+    pijuice = PiJuice(1, 0x14)
+    batterylevel = pijuice.status.GetChargeLevel()[9] * 10 + pijuice.status.GetChargeLevel()[10]
+    print("Battery Level: " + str(batterylevel) + "%")
+    
+    # Get the SensorHub data range.
     for i in range(TEMP_REG,HUMAN_DETECT + 1):
         aReceiveBuf.append(bus.read_byte_data(DEVICE_ADDR, i))
-        
+    
+    # Overrange detection and malfunctioning for each sensor.
     if aReceiveBuf[STATUS_REG] & 0x01 :
         print("Off-chip temperature sensor overrange!")
         
@@ -109,17 +118,7 @@ def main():
     
     print("Current onboard sensor humidity = %d %%" % aReceiveBuf[ON_BOARD_HUMIDITY_REG])
     humidity = "%d" % aReceiveBuf[ON_BOARD_HUMIDITY_REG]
-    
-    ser = serial.Serial('/dev/ttyUSB0')
-
-    data = []
-    for index in range(0,10):
-        datanum = ser.read()
-        data.append(datanum)
-                    
-    dustlevel = int.from_bytes(b''.join(data[4:6]), byteorder='little')
-    print("Dust Level: " + str(dustlevel))
-
+   
     if aReceiveBuf[ON_BOARD_SENSOR_ERROR] != 0 :
         print("Onboard temperature and humidity sensor data may not be up to date!")
 
@@ -135,11 +134,21 @@ def main():
 
     if aReceiveBuf[HUMAN_DETECT] == 1 :
         print("Live body detected within 5 seconds!")
+        raspistill -o Desktop/movement.png -w 1920 -h 1080
         human_detection = "1"
         
     else:
         print("No humans detected!")     
         human_detection = "0"        
+        
+    # SDS011 Dust Sensor - Get Data
+    ser = serial.Serial('/dev/ttyUSB0')
+    data = []
+    for index in range(0,10):
+        datanum = ser.read()
+        data.append(datanum)               
+    dustlevel = int.from_bytes(b''.join(data[4:6]), byteorder='little')
+    print("Dust Level: " + str(dustlevel))
         
     database = r"db.sqlite3"
     # create a database connection
@@ -148,14 +157,13 @@ def main():
         try:
             # create a new record
             dateandtime = datetime.datetime.now()
-            savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection)
+            savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel)
             create_record(conn, savedata)
             print("Saved the sensor data correctly.")
             print("System is configured to run every 10 minutes.")
-            time.sleep(600)
-            main()
-            
+            time.sleep(600) # Sleep for 10 minutes.
+            main()     
         except Error as e:
-            print(e)
+            print(e) # Print database writing error.
             
 main()

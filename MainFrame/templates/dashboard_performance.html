@@ -64,6 +64,29 @@
 	<br>
 	</div>
 	</div>
+	
+	<div data-toggle="tooltip" data-placement="right" title="System Battery Level" style="width: 10%; height: 5%; position: fixed; display: flex; bottom: 20px; left: 0px; opacity: 0.95;" class="overlay animate__animated animate__backInDown">
+	{% for basicdata in basicdata %}
+		{% if basicdata.batterylevel > 75%}
+		<p style="color: green">
+		<img src="https://renovatesoftware.com:140/images/batteryicons/100.png" width="50%" alt="">
+		{{basicdata.batterylevel}}%</p>
+		{% elif basicdata.batterylevel > 50 and basicdata.batterylevel < 76 %}
+		<p style="color: yellow">
+		<img src="https://renovatesoftware.com:140/images/batteryicons/75.png" width="50%" alt="">	
+        {{basicdata.batterylevel}}%</p>		
+		{% elif basicdata.batterylevel > 25 and basicdata.batterylevel < 51 %}
+		<p style="color: orange">
+		<img src="https://renovatesoftware.com:140/images/batteryicons/50.png" width="50%" alt="">
+        {{basicdata.batterylevel}}%</p>		
+		{% elif basicdata.batterylevel > 5 and basicdata.batterylevel < 26 %}
+		<img src="https://renovatesoftware.com:140/images/batteryicons/25.png" width="50%" alt="">	
+		<p style="color: red">
+		{{basicdata.batterylevel}}%</p>
+		{% endif %}
+		{% endfor %}
+    </div>
+	
 	<script>
 // Memory
       google.charts.load('current', {'packages':['line']});

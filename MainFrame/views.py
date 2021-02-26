@@ -25,27 +25,31 @@ def index(request):
 
 @login_required
 def dashboardView(request):
+    basicdata = SensorData.objects.order_by('-datetime')[:1]
     errorcount = Diagnostic_Issue.objects.order_by('-datetime')[:10].count()
     recentupdates = Update.objects.order_by('dateandtime')[:3]
     min10report = ResourceLog.objects.order_by('-datetime')[:1]
     recentactivity = AccountActivity.objects.order_by('-datetime')[:5]
-    return render (request, 'dashboard.html',{'recentupdates':recentupdates,'errorcount':errorcount,'min10report':min10report,'recentactivity':recentactivity})
+    return render (request, 'dashboard.html',{'basicdata':basicdata,'recentupdates':recentupdates,'errorcount':errorcount,'min10report':min10report,'recentactivity':recentactivity})
     
 @login_required
 def performanceView(request):
+    basicdata = SensorData.objects.order_by('-datetime')[:1]
     min10report = ResourceLog.objects.order_by('-datetime')[:20]
-    return render (request, 'dashboard_performance.html',{'min10report':min10report})
+    return render (request, 'dashboard_performance.html',{'basicdata':basicdata,'min10report':min10report})
  
 @login_required 
 def dataView(request):
+    basicdata = SensorData.objects.order_by('-datetime')[:1]
     data = SensorData.objects.order_by('-datetime')[:20]
     datacount = SensorData.objects.order_by('-datetime')[:20].count()
-    return render (request, 'dashboard_data.html',{'data':data,'datacount':datacount})
+    return render (request, 'dashboard_data.html',{'basicdata':basicdata,'data':data,'datacount':datacount})
     
 @login_required 
 def daiagnosticView(request):
+    basicdata = SensorData.objects.order_by('-datetime')[:1]
     resources = ResourceLog.objects.order_by('-datetime')[:1]
     sensordata = SensorData.objects.order_by('-datetime')[:1]
     errors = Diagnostic_Issue.objects.order_by('-datetime')[:10]
     errorcount = Diagnostic_Issue.objects.order_by('-datetime')[:10].count()
-    return render (request, 'dashboard_diagnostics.html',{'errors':errors,'errorcount':errorcount,'resources':resources,'sensordata':sensordata})
+    return render (request, 'dashboard_diagnostics.html',{'basicdata':basicdata,'errors':errors,'errorcount':errorcount,'resources':resources,'sensordata':sensordata})
