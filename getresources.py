@@ -1,5 +1,7 @@
 # Daily Reports Script
 # Renovate Software LTD 2021
+# Alexander Walford
+
 
 import time
 import datetime
