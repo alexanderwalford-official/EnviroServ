@@ -5,8 +5,8 @@ import sys
 
 
 def main():
-    # os.system("sudo python3 /home/pi/EnviroServ/getsensordata.py")
-    # os.system("sudo python3 /home/pi/EnviroServ/getresources.py")
+    subprocess.call(['open', '-W', '-a', 'Terminal.app', 'python3', '--args', 'getsensordata.py'])
+    subprocess.call(['open', '-W', '-a', 'Terminal.app', 'python3', '--args', 'getresources.py'])
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'EnviroServ.settings')
     try:
         from django.core.management import execute_from_command_line
