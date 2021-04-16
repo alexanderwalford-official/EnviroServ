@@ -92,6 +92,7 @@ def errorRecord(conn, savedata2, issuenow, severitynow):
     dateandtime = datetime.datetime.now()
     savedata2 = (dateandtime, issuenow, severitynow)
     create_record2(conn, savedata2)
+    conn.close()
     print("Saved the error data correctly.")
 
 def main():
@@ -235,6 +236,7 @@ def main():
             dateandtime = datetime.datetime.now()
             savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel)
             create_record(conn, savedata)
+            conn.close()
             print("Saved the sensor data correctly.")
             print("System is configured to run every 2 minutes and 30 seconds.")
             time.sleep(150) # Sleep for 2 minutes 30 seconds.
