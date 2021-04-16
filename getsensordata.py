@@ -40,7 +40,6 @@ BMP280_PRESSURE_REG_M = 0x0A
 BMP280_PRESSURE_REG_H = 0x0B
 BMP280_STATUS = 0x0C
 HUMAN_DETECT = 0x0D
-ISSUE_COUNTER = 0
 
 bus = smbus.SMBus(DEVICE_BUS)
 aReceiveBuf = []
@@ -106,6 +105,7 @@ def main():
     human_detection = ""
     dustlevel = ""
     batterylevel = ""
+    ISSUE_COUNTER = 0
     
     # Get the battery level
     pijuice = PiJuice(1, 0x14)
