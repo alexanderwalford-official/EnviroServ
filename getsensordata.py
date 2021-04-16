@@ -240,6 +240,9 @@ def main():
             time.sleep(150) # Sleep for 2 minutes 30 seconds.
             main() # run the script again
         except Error as e:
+            mylcd = I2C_LCD_driver.lcd()
+            mylcd.lcd_display_string("Database", 1)
+            mylcd.lcd_display_string("Error", 2)
             print(e) # Print database writing error.
             
 main()
