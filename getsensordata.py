@@ -192,12 +192,12 @@ def main():
         data.append(datanum)               
     dustlevel = int.from_bytes(b''.join(data[4:6]), byteorder='little')
     print("Dust Level: " + str(dustlevel))    
+    database = r"db.sqlite3"
     # get the IP
     conn = create_connection(database)
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
     # create a database connection
-    database = r"db.sqlite3"
     with conn:
         try:
             # display LCD text
