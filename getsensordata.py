@@ -243,16 +243,16 @@ def main():
             mylcd = I2C_LCD_driver.lcd()
             mylcd.lcd_display_string("Database", 1)
             mylcd.lcd_display_string("Error", 2)
-            time.sleep(1)
+            time.sleep(2)
             mylcd.lcd_clear()
             mylcd.lcd_display_string("Database", 1)
             mylcd.lcd_display_string("Error", 2)
-            time.sleep(1)
+            time.sleep(2)
             mylcd.lcd_clear()
             mylcd.lcd_display_string("Database", 1)
             mylcd.lcd_display_string("Error", 2)
+            print(e) # Print database writing error.
             time.sleep(150) # Sleep for 2 minutes 30 seconds.
             main() # run the script again
-            print(e) # Print database writing error.
             
 main()
