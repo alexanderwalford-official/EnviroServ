@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+import subprocess
 
 def main():
     subprocess.call(['open', '-W', '-a', 'Terminal.app', 'python3', '--args', 'getsensordata.py'])
