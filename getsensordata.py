@@ -40,6 +40,7 @@ BMP280_PRESSURE_REG_M = 0x0A
 BMP280_PRESSURE_REG_H = 0x0B
 BMP280_STATUS = 0x0C
 HUMAN_DETECT = 0x0D
+ISSUE_COUNTER = 0
 
 bus = smbus.SMBus(DEVICE_BUS)
 
@@ -74,6 +75,27 @@ def create_record(conn, savedata):
     cur.execute(sql, savedata)
     conn.commit()
     return cur.lastrowid
+    
+def create_record2(conn, savedata2):
+    """
+    Create a new record
+    :param conn:
+    :param Diagnostic_Issue:
+    :return:
+    """
+    sql = ''' INSERT INTO MainFrame_Diagnostic_Issue(datetime,issue,severity)
+              VALUES(?,?,?,) '''
+    cur = conn.cursor()
+    cur.execute(sql, savedata2)
+    conn.commit()
+    return cur.lastrowid
+  
+def errorRecord(conn, savedata2, issuenow, severitynow):
+    # create a new record
+    dateandtime = datetime.datetime.now()
+    savedata2 = (dateandtime, issuenow, severitynow)
+    create_record2(conn, savedata2)
+    print("Saved the error data correctly.")
 
 def main():
     # Declaration of blank, initial variables.
@@ -98,22 +120,34 @@ def main():
     
     # Overrange detection and malfunctioning for each sensor.
     if aReceiveBuf[STATUS_REG] & 0x01 :
-        print("Off-chip temperature sensor overrange!")
+        issuenow = "Off-Chip Temperature: Issue detected (over range)."
+        severitynow = "High"
+        ISSUE_COUNTER = ISSUE_COUNTER + 1
+        errorRecord(conn, savedata2, issuenow, severitynow)
         
     elif aReceiveBuf[STATUS_REG] & 0x02 :
-        print("No external temperature sensor!")
+        issuenow = "Issue Detected: No external temperature sensor."
+        severitynow = "Medium"
+        ISSUE_COUNTER = ISSUE_COUNTER + 1
+        errorRecord(conn, savedata2, issuenow, severitynow)
         
-    else :
+    else:
         print("Current off-chip sensor temperature = %d Celsius" % aReceiveBuf[TEMP_REG])
         enviro_temprature = "%d" % aReceiveBuf[TEMP_REG]
         
     if aReceiveBuf[STATUS_REG] & 0x04 :
-        print("Onboard brightness sensor overrange!")
+        issuenow = "Onboard brightness: Issue detected (over range)."
+        severitynow = "High"
+        ISSUE_COUNTER = ISSUE_COUNTER + 1
+        errorRecord(conn, savedata2, issuenow, severitynow)
         
     elif aReceiveBuf[STATUS_REG] & 0x08 :
-        print("Onboard brightness sensor failure!")
+        issuenow = "Onboard Brightness: Issue detected."  
+        severitynow = "Medium"
+        ISSUE_COUNTER = ISSUE_COUNTER + 1
+        errorRecord(conn, savedata2, issuenow, severitynow)
         
-    else :
+    else:
         print("Current onboard sensor brightness = %d Lux" % (aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L]))
         brightness = "%d" % (aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L])
         
@@ -124,7 +158,10 @@ def main():
     humidity = "%d" % aReceiveBuf[ON_BOARD_HUMIDITY_REG]
    
     if aReceiveBuf[ON_BOARD_SENSOR_ERROR] != 0 :
-        print("Onboard temperature and humidity sensor data may not be up to date!")
+        issuenow = "Onboard Temperature & Humidity: Issues detected."
+        severitynow = "High"
+        ISSUE_COUNTER = ISSUE_COUNTER + 1
+        errorRecord(conn, savedata2, issuenow, severitynow)
 
     if aReceiveBuf[BMP280_STATUS] == 0 :
         print("Current barometer temperature = %d Celsius" % aReceiveBuf[BMP280_TEMP_REG])
@@ -133,12 +170,16 @@ def main():
         print("Current barometer pressure = %d pascal" % (aReceiveBuf[BMP280_PRESSURE_REG_L] | aReceiveBuf[BMP280_PRESSURE_REG_M] << 8 | aReceiveBuf[BMP280_PRESSURE_REG_H] << 16))
         barometer_pressure = "%d" % (aReceiveBuf[BMP280_PRESSURE_REG_L] | aReceiveBuf[BMP280_PRESSURE_REG_M] << 8 | aReceiveBuf[BMP280_PRESSURE_REG_H] << 16)
     
-    else :
-        print("Onboard barometer works abnormally!")
+    else:
+        # issue with barometer
+        issuenow = "Onboard Barometer: Issue detected."
+        severitynow = "Medium"
+        ISSUE_COUNTER = ISSUE_COUNTER + 1
+        errorRecord(conn, savedata2, issuenow, severitynow)
 
     if aReceiveBuf[HUMAN_DETECT] == 1 :
         print("Live body detected within 5 seconds!")
-        os.system("raspistill -o Desktop/movement.png -w 1920 -h 1080") # Take a photo
+        os.system("raspistill -o Desktop/movement.png -w 1920 -h 1080") # Take a photo (optional)
         human_detection = "1"
         
     else:
@@ -152,13 +193,13 @@ def main():
         datanum = ser.read()
         data.append(datanum)               
     dustlevel = int.from_bytes(b''.join(data[4:6]), byteorder='little')
-    print("Dust Level: " + str(dustlevel))
-        
-    database = r"db.sqlite3"
-    # create a database connection
+    print("Dust Level: " + str(dustlevel))    
+    # get the IP
     conn = create_connection(database)
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
+    # create a database connection
+    database = r"db.sqlite3"
     with conn:
         try:
             # display LCD text
@@ -183,8 +224,12 @@ def main():
             mylcd.lcd_display_string(str(ip_address), 2)
             time.sleep(2)
             mylcd.lcd_clear()
-            mylcd.lcd_display_string("System Status:", 1)
-            mylcd.lcd_display_string("Operational", 2)
+            if ISSUE_COUNTER == 0:
+                mylcd.lcd_display_string("System Status:", 1)
+                mylcd.lcd_display_string("Operational", 2)
+            else:
+                mylcd.lcd_display_string("System Status:", 1)
+                mylcd.lcd_display_string(str(ISSUE_COUNTER) + " Issues", 2)
             # create a new record
             dateandtime = datetime.datetime.now()
             savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel)
@@ -192,7 +237,7 @@ def main():
             print("Saved the sensor data correctly.")
             print("System is configured to run every 2 minutes and 30 seconds.")
             time.sleep(150) # Sleep for 2 minutes 30 seconds.
-            main()     
+            main() # run the script again
         except Error as e:
             print(e) # Print database writing error.
             
