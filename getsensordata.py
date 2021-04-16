@@ -190,8 +190,8 @@ def main():
             savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel)
             create_record(conn, savedata)
             print("Saved the sensor data correctly.")
-            print("System is configured to run every 10 minutes.")
-            time.sleep(600) # Sleep for 10 minutes.
+            print("System is configured to run every 2 minutes and 30 seconds.")
+            time.sleep(150) # Sleep for 2 minutes 30 seconds.
             main()     
         except Error as e:
             print(e) # Print database writing error.
