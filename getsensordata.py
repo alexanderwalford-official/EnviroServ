@@ -43,9 +43,7 @@ HUMAN_DETECT = 0x0D
 ISSUE_COUNTER = 0
 
 bus = smbus.SMBus(DEVICE_BUS)
-
 aReceiveBuf = []
-
 aReceiveBuf.append(0x00) 
 
 
@@ -203,6 +201,7 @@ def main():
     with conn:
         try:
             # display LCD text
+            mylcd.lcd_clear()
             mylcd = I2C_LCD_driver.lcd()
             mylcd.lcd_display_string("Sensor Data", 1)
             mylcd.lcd_display_string("Collected", 2)
@@ -230,6 +229,7 @@ def main():
             else:
                 mylcd.lcd_display_string("System Status:", 1)
                 mylcd.lcd_display_string(str(ISSUE_COUNTER) + " Issues", 2)
+            # end of LCD text, the system status will remain displayed
             # create a new record
             dateandtime = datetime.datetime.now()
             savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel)
