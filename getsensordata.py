@@ -201,6 +201,7 @@ def main():
     with conn:
         try:
             # display LCD text
+            mylcd = I2C_LCD_driver.lcd()
             mylcd.lcd_clear()
             mylcd = I2C_LCD_driver.lcd()
             mylcd.lcd_display_string("Sensor Data", 1)
