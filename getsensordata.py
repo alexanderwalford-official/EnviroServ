@@ -6,6 +6,7 @@
 # SDS011
 # SensorHub
 # PiJuice
+# I2C LCD Display
 
 
 import smbus
@@ -17,6 +18,10 @@ from sqlite3 import Error
 import psutil
 import serial
 from pijuice import PiJuice
+import I2C_LCD_driver
+import socket
+import fcntl
+import struct
 
 
 DEVICE_BUS = 1
@@ -56,7 +61,6 @@ def create_connection(db_file):
         print(e)
     return conn
 
-
 def create_record(conn, savedata):
     """
     Create a new record
@@ -86,7 +90,7 @@ def main():
     # Get the battery level
     pijuice = PiJuice(1, 0x14)
     batterylevel = int(pijuice.status.GetChargeLevel()['data'])
-    print("Battery Level: " + str(pijuice.status.GetChargeLevel()['data']))
+    print("Battery Level: " + str(pijuice.status.GetChargeLevel()['data']) + "%")
     
     # Get the SensorHub data range.
     for i in range(TEMP_REG,HUMAN_DETECT + 1):
@@ -153,8 +157,34 @@ def main():
     database = r"db.sqlite3"
     # create a database connection
     conn = create_connection(database)
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
     with conn:
         try:
+            # display LCD text
+            mylcd = I2C_LCD_driver.lcd()
+            mylcd.lcd_display_string("Sensor Data", 1)
+            mylcd.lcd_display_string("Collected", 2)
+            time.sleep(2)
+            mylcd.lcd_clear()
+            mylcd.lcd_display_string("Dust Level:", 1)
+            mylcd.lcd_display_string(str(dustlevel), 2)   
+            time.sleep(2)
+            mylcd.lcd_clear()
+            mylcd.lcd_display_string("Environment Temp:", 1)
+            mylcd.lcd_display_string(str(enviro_temprature) + "C", 2)   
+            time.sleep(2)
+            mylcd.lcd_clear()
+            mylcd.lcd_display_string("Battery Level:", 1)
+            mylcd.lcd_display_string(str(batterylevel) + "%", 2)
+            time.sleep(2)
+            mylcd.lcd_clear()
+            mylcd.lcd_display_string("IP Address:", 1) 
+            mylcd.lcd_display_string(str(ip_address), 2)
+            time.sleep(2)
+            mylcd.lcd_clear()
+            mylcd.lcd_display_string("System Status:", 1)
+            mylcd.lcd_display_string("Operational", 2)
             # create a new record
             dateandtime = datetime.datetime.now()
             savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel)
