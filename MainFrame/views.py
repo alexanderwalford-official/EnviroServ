@@ -9,31 +9,16 @@ from .models import ResourceLog
 from .models import SensorData
 from .models import Diagnostic_Issue
 from .models import AccountActivity
+import csv
+from csv_export.views import CSVExportView
 
 
-def download_csv(modeladmin, request, queryset):
-    if not request.user.is_staff:
-        raise PermissionDenied
-    opts = queryset.model._meta
-    model = queryset.model
-    response = HttpResponse(mimetype='text/csv')
-    # force download.
-    response['Content-Disposition'] = 'attachment;filename=export.csv'
-    # the csv writer
-    writer = csv.writer(response)
-    field_names = [field.name for field in opts.fields]
-    # Write a first row with header information
-    writer.writerow(field_names)
-    # Write data rows
-    for obj in queryset:
-        writer.writerow([getattr(obj, field) for field in field_names])
-    return response
-download_csv.short_description = "Download selected as csv"
-
-@login_required 
-def exportSCV(request):
-    data = download_csv(ModelAdmin, request, SensorData.objects.order_by('-datetime'))
-    return HttpResponse (data, content_type='text/csv')
+class exportCSV(CSVExportView):
+    model = SensorData
+    fields = '__all__'
+    header  = True
+    specify_seperator = False
+    filename = 'data-export.csv'
 
 @receiver(user_logged_in)
 def on_login(sender, user, request, **kwargs):
