@@ -7,6 +7,8 @@
 # SensorHub
 # PiJuice
 # I2C LCD Display
+# GPS
+# 3G Cellular
 
 
 import smbus
@@ -22,6 +24,7 @@ import I2C_LCD_driver
 import socket
 import fcntl
 import struct
+import serial
 
 
 DEVICE_BUS = 1
@@ -40,10 +43,12 @@ BMP280_PRESSURE_REG_M = 0x0A
 BMP280_PRESSURE_REG_H = 0x0B
 BMP280_STATUS = 0x0C
 HUMAN_DETECT = 0x0D
+ser = serial.Serial('/dev/ttyACM3')
 
 bus = smbus.SMBus(DEVICE_BUS)
 aReceiveBuf = []
 aReceiveBuf.append(0x00) 
+serGPS = serial.Serial('/dev/ttyACM3')
 
 
 def create_connection(db_file):
@@ -107,6 +112,39 @@ def main():
     dustlevel = ""
     batterylevel = ""
     ISSUE_COUNTER = 0
+    GPSdata = str(serGPS.readline())
+    
+    # GPS monitoring
+    if "b'$GNRMC" in str(GPSdata):
+        # GPRMC = Recommended minimum specific GPS/Transit data
+        # Reading the GPS fix data is an alternative approach that also works
+        parts = GPSdata.split(",")
+        if parts[2] == 'V':
+            # V = Warning, most likel. There aren't any satellites in view...
+            print("GPS receiver warning. Ensure that the device has a clear view to the sky.")
+            mylcd = I2C_LCD_driver.lcd()
+            mylcd.lcd_clear()
+            mylcd.lcd_display_string("GPS Warn", 1)
+            mylcd.lcd_display_string("Unclear View", 2)
+        else:
+            # Get the position data that was transmitted with the GPRMC message
+            # In this example, I'm only interested in the longitude and latitude
+            # for other values, that can be read, refer to: http://aprs.gids.nl/nmea/#rmc
+            longitude = formatDegreesMinutes(parts[5], 3)
+            latitude = formatDegreesMinutes(parts[3], 2)
+            print("Your position: lon = " + str(longitude) + ", lat = " + str(latitude))
+            mylcd = I2C_LCD_driver.lcd()
+            mylcd.lcd_clear()
+            mylcd.lcd_display_string("GPS Rec", 1)
+            mylcd.lcd_display_string("Collected", 2)
+    else:
+        # Handle other NMEA messages and unsupported strings
+        mylcd = I2C_LCD_driver.lcd()
+        mylcd.lcd_clear()
+        mylcd.lcd_display_string("GPS Rec", 1)
+        mylcd.lcd_display_string("ERROR", 2)
+        print(GPSdata)
+        pass
     
     # Get the battery level
     pijuice = PiJuice(1, 0x14)
@@ -204,7 +242,6 @@ def main():
             # display LCD text
             mylcd = I2C_LCD_driver.lcd()
             mylcd.lcd_clear()
-            mylcd = I2C_LCD_driver.lcd()
             mylcd.lcd_display_string("Sensor Data", 1)
             mylcd.lcd_display_string("Collected", 2)
             time.sleep(2)
