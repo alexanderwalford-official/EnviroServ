@@ -151,6 +151,10 @@
 		<img src="https://renovatesoftware.com:140/images/batteryicons/25.png" width="50%" alt="">	
 		<p style="color: red">
 		{{basicdata.batterylevel}}%</p>
+		{% else %}
+		<img src="https://renovatesoftware.com:140/images/batteryicons/25.png" width="50%" alt="">	
+		<p style="color: red">
+		{{basicdata.batterylevel}}%</p>
 		{% endif %}
 		{% endfor %}
     </div>

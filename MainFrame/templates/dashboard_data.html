@@ -66,7 +66,7 @@
 	<br>
 	<br>
 	{% if datacount == 0 %}
-	<p>❌ The system has not captured any data yet. Have you started getresources.py?</p>
+	<p>❌ The system has not captured any data yet. Have you started getData.py?</p>
 	{% else %}
 	<p style="color: gray">Rendered the latest 20 records..</p>
 <table class="tg">
@@ -82,6 +82,7 @@
     <th class="tg-0lax"><b>Environmental Humidity</b></th>
     <th class="tg-0lax"><b>Barmoetric Pressure</b></th>
     <th class="tg-0lax"><b>Human Detection</b></th>
+	<th class="tg-0lax"><b>GPS Location</b></th>
   </tr>
 </thead>
 <tbody>
@@ -111,6 +112,7 @@
     <td class="tg-0lax">{{data.humidity}}%</td>
     <td class="tg-0lax">{{data.barometer_pressure}} Pascal</td>
     <td class="tg-0lax">{{data.human_detection}}</td>
+	<td class="tg-0lax">{{data.longitude}} {{data.latitude}}</td>
   </tr>
   	{% endfor %}
 </tbody>
@@ -134,6 +136,10 @@
 		<img src="https://renovatesoftware.com:140/images/batteryicons/50.png" width="50%" alt="">
         {{basicdata.batterylevel}}%</p>		
 		{% elif basicdata.batterylevel > 5 and basicdata.batterylevel < 26 %}
+		<img src="https://renovatesoftware.com:140/images/batteryicons/25.png" width="50%" alt="">	
+		<p style="color: red">
+		{{basicdata.batterylevel}}%</p>
+		{% else %}
 		<img src="https://renovatesoftware.com:140/images/batteryicons/25.png" width="50%" alt="">	
 		<p style="color: red">
 		{{basicdata.batterylevel}}%</p>

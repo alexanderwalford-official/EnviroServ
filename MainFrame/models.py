@@ -24,6 +24,8 @@ class SensorData(models.Model):
     barometer_pressure = models.IntegerField()
     human_detection = models.CharField(max_length=100, default="", unique=False)
     batterylevel = models.IntegerField(null=True)
+    longitude = models.CharField(max_length=200, default="0.000", unique=False)
+    latitude = models.CharField(max_length=200, default="0.000", unique=False)
     
 class Diagnostic_Issue(models.Model):
     datetime = models.DateTimeField(auto_now_add=True, null=True) 
