@@ -143,7 +143,7 @@ def main():
         # Reading the GPS fix data is an alternative approach that also works
         parts = GPSdata.split(",")
         if parts[2] == 'V':
-            # V = Warning, most likel. There aren't any satellites in view...
+            # V = There aren't any satellites in view...
             longitude = "No satellites in view."
             latitude = "No satellites in view."
             print("GPS receiver warning. Ensure that the device has a clear view to the sky.")
