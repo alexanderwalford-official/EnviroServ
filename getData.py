@@ -27,6 +27,7 @@ import struct
 import serial
 import psutil
 from requests import get
+import subprocess
 
 
 DEVICE_BUS = 1
@@ -132,6 +133,9 @@ def main():
     latitude = ""
     ISSUE_COUNTER = 0
     GPSdata = str(serGPS.readline())
+    
+    # Turn on the SDS011 sensor.
+    subprocess.run(['echo', 'on', '>' '/sys/bus/usb/devices/ttyUSB0/power/control']) 
     
     # GPS monitoring from on-board sensor
     if "b'$GNRMC" in str(GPSdata):
@@ -308,6 +312,9 @@ def main():
             savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel, longitude, latitude)
             create_record(conn, savedata)
             conn.close()
+            # Shutdown the SDS011 sensor.
+            subprocess.run(['echo', '0', '>' '/sys/bus/usb/devices/ttyUSB0/power/autosuspend_delay_ms']) 
+            subprocess.run(['echo', 'auto', '>' '/sys/bus/usb/devices/ttyUSB0/power/control']) 
             print("Saved the sensor data correctly.")
             print("System is configured to run every 2 minutes and 30 seconds.")
             time.sleep(120) # Sleep for 2 minutes.
