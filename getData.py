@@ -46,12 +46,11 @@ BMP280_PRESSURE_REG_M = 0x0A
 BMP280_PRESSURE_REG_H = 0x0B
 BMP280_STATUS = 0x0C
 HUMAN_DETECT = 0x0D
-ser = serial.Serial('/dev/ttyACM3')
 
 bus = smbus.SMBus(DEVICE_BUS)
 aReceiveBuf = []
 aReceiveBuf.append(0x00) 
-serGPS = serial.Serial('/dev/ttyACM3')
+serGPS = serial.Serial('/dev/ttyACM3', 9600, timeout=15)
 
 
 def create_connection(db_file):
