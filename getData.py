@@ -261,7 +261,10 @@ def main():
     # get the IP
     conn = create_connection(database)
     hostname = socket.gethostname()
-    ip_address = str(get('https://api.ipify.org').text)
+    try:
+        ip_address = str(get('https://api.ipify.org').text)
+    except:
+        ip_address = ""
     dateandtime = datetime.datetime.now()
     process = psutil.Process(os.getpid())
     mem = process.memory_info()[0] / float(2 ** 20)  
