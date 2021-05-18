@@ -88,7 +88,7 @@ def create_record2(conn, savedata2):
     :return:
     """
     sql = ''' INSERT INTO MainFrame_Diagnostic_Issue(datetime,issue,severity)
-              VALUES(?,?,?,) '''
+              VALUES(?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, savedata2)
     conn.commit()
@@ -132,6 +132,10 @@ def main():
     latitude = ""
     ISSUE_COUNTER = 0
     GPSdata = str(serGPS.readline())
+    
+    # open the database
+    database = r"db.sqlite3"
+    conn = create_connection(database)
     
     # Turn on the SDS011 sensor.
     subprocess.run(['echo', 'on', '>' '/sys/bus/usb/devices/ttyUSB0/power/control']) 
@@ -257,9 +261,7 @@ def main():
         data.append(datanum)               
     dustlevel = int.from_bytes(b''.join(data[4:6]), byteorder='little')
     print("Dust Level: " + str(dustlevel))    
-    database = r"db.sqlite3"
     # get the IP
-    conn = create_connection(database)
     hostname = socket.gethostname()
     try:
         ip_address = str(get('https://api.ipify.org').text)
