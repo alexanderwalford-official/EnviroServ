@@ -12,7 +12,7 @@ def main():
         pass
     else:
         global counter
-        counter = counter + 0.01
+        counter = counter + 0.001
         return counter
     GPIO.cleanup() 
     time.sleep(0.1)
