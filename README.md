@@ -4,8 +4,8 @@ Official repo for EnviroServ by Alexander Walford, published opensource to be de
 ![alt text](https://renovatesoftware.com:140/images/enviroscrnsht1.png)
 
 # Installation / Setup
-1. ```sudo su```
-2. ```cd EnviroServ```
+1. ```cd EnviroServ```
+2. ```sudo python3 manage.py makemgrations```
 3. ```sudo python3 manage.py migrate```
 4. ```sudo python3 manage.py createsuperuser```
-5. ```sudo reboot```
+5. ```sudo python3 manage.py runserver```
