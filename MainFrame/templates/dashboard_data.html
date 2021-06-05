@@ -75,6 +75,7 @@
   <!-- rows -->
     <th class="tg-0lax"><b>Date And Time</b></th>
 	<th class="tg-0lax"><b>Dust Amount</b></th>
+	<th class="tg-0lax"><b>Radiation</b></th>
     <th class="tg-0lax"><b>Environmental Temprature</b></th>
     <th class="tg-0lax"><b>System Temprature</b></th>
 	<th class="tg-0lax"><b>Barmoetric Temprature</b></th>
@@ -105,6 +106,7 @@
 	<td class="tg-0lax" style="color:darkred"><b>{{data.dustlevel}} / 300 (HAZARDOUS)</b></td>
 	{% endif %}
 	
+	<td class="tg-0lax">{{data.msvhr}} mSv/h</td>
     <td class="tg-0lax">{{data.enviro_temprature}} °C</td>
     <td class="tg-0lax">{{data.sys_temprature}} °C</td>
 	<td class="tg-0lax">{{data.barometer_temperature}} °C</td>

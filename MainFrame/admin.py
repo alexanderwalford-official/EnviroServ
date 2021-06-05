@@ -16,7 +16,7 @@ class ResourceLogAdmin(admin.ModelAdmin):
 admin.site.register(ResourceLog, ResourceLogAdmin)
 
 class SensorDataAdmin(admin.ModelAdmin):
-    list_display = ('datetime', 'enviro_temprature', 'humidity', 'longitude', 'latitude', 'barometer_pressure')
+    list_display = ('datetime', 'enviro_temprature', 'humidity', 'longitude', 'latitude', 'barometer_pressure', 'msvhr')
 admin.site.register(SensorData, SensorDataAdmin)
 
 class IssueAdmin(admin.ModelAdmin):

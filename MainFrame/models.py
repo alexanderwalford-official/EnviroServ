@@ -26,6 +26,7 @@ class SensorData(models.Model):
     batterylevel = models.IntegerField(null=True)
     longitude = models.CharField(max_length=200, default="0.000", unique=False)
     latitude = models.CharField(max_length=200, default="0.000", unique=False)
+    msvhr = models.FloatField(default=0.00)
     
 class Diagnostic_Issue(models.Model):
     datetime = models.DateTimeField(auto_now_add=True, null=True) 

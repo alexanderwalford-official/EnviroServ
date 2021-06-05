@@ -9,6 +9,7 @@
 # I2C LCD Display
 # GPS
 # 3G Cellular
+# KKmoon Nuclear Radiation Detector (GPIO pin 17)
 
 
 import smbus
@@ -28,6 +29,8 @@ import serial
 import psutil
 from requests import get
 import subprocess
+import RPi.GPIO as GPIO
+from threading import Thread
 
 
 DEVICE_BUS = 1
@@ -46,6 +49,8 @@ BMP280_PRESSURE_REG_M = 0x0A
 BMP280_PRESSURE_REG_H = 0x0B
 BMP280_STATUS = 0x0C
 HUMAN_DETECT = 0x0D
+Gcounter = 0
+MSVperhour = 0
 
 bus = smbus.SMBus(DEVICE_BUS)
 aReceiveBuf = []
@@ -73,8 +78,8 @@ def create_record(conn, savedata):
     :param ResourceLog:
     :return:
     """
-    sql = ''' INSERT INTO MainFrame_SensorData(datetime,dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection,batterylevel,longitude,latitude)
-              VALUES(?,?,?,?,?,?,?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO MainFrame_SensorData(datetime,dustlevel,enviro_temprature,sys_temprature,brightness,humidity,barometer_temperature,barometer_pressure,human_detection,batterylevel,longitude,latitude,msvhr)
+              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, savedata)
     conn.commit()
@@ -116,6 +121,30 @@ def errorRecord(conn, savedata2, issuenow, severitynow):
     create_record2(conn, savedata2)
     conn.close()
     print("Saved the error data correctly.")
+
+def countG():
+    # GPIO settings
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(17, GPIO.IN)
+    if GPIO.input(17) == 1:
+        pass
+        # High pulse, ignore this as we are only looking for breaks in the pulses.
+    else:
+        # Low pulse
+        global Gcounter
+        Gcounter = Gcounter + 0.01
+        return Gcounter
+    GPIO.cleanup() 
+    time.sleep(0.1)
+    Thread(target=countG,).start()
+    
+def everymin():
+    global Gcounter # reference to the global variable
+    global MSVperhour # reference to the global variable
+    MSVperhour = Gcounter * 60 # get the counter and get what it would be per hour
+    Gcounter = 0 # reset the variable
+    time.sleep(60) # delay 60 seconds
+    Thread(target=everymin,).start()
 
 def main():
     # Declaration of blank, initial variables.
@@ -180,6 +209,9 @@ def main():
     pijuice = PiJuice(1, 0x14)
     batterylevel = int(pijuice.status.GetChargeLevel()['data'])
     print("Battery Level: " + str(pijuice.status.GetChargeLevel()['data']) + "%")
+    
+    # get the radiation level
+    print("m sv/hr: " + str(MSVperhour))
     
     # Get the SensorHub data range.
     for i in range(TEMP_REG,HUMAN_DETECT + 1):
@@ -313,7 +345,7 @@ def main():
             # create a new record
             dateandtime = datetime.datetime.now()
             create_record3(conn, savedata3)
-            savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel, longitude, latitude)
+            savedata = (dateandtime, dustlevel, enviro_temprature, sys_temprature, brightness, humidity, barometer_temperature, barometer_pressure, human_detection, batterylevel, longitude, latitude, MSVperhour)
             create_record(conn, savedata)
             conn.close()
             # Shutdown the SDS011 sensor.
@@ -339,4 +371,7 @@ def main():
             time.sleep(120) # Sleep for 2 minutes.
             main() # run the script again
             
-main()
+# Start each function on a seperate thread
+Thread(target=main,).start()
+Thread(target=countG,).start()
+Thread(target=everymin,).start()
