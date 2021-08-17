@@ -128,7 +128,7 @@ def countG():
     GPIO.setup(17, GPIO.IN)
     if GPIO.input(17) == 1:
         pass
-        # High pulse, ignore this as we are only looking for breaks in the pulses.
+        # High pulse, ignore this as we are only looking for breaks in the pulses
     else:
         # Low pulse
         global Gcounter
