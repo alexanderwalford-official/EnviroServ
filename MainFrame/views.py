@@ -59,6 +59,25 @@ def daiagnosticView(request):
     basicdata = SensorData.objects.order_by('-datetime')[:1]
     resources = ResourceLog.objects.order_by('-datetime')[:1]
     sensordata = SensorData.objects.order_by('-datetime')[:1]
+    
+    # get the overall dust density as a float from the latest record
+    dustrating = float(str(SensorData.objects.values_list('dustlevel').order_by('-datetime')[0]).replace('(','').replace(')','').replace(',',''))
+    
+    # get the temprature of the environment
+    temprating = float(str(SensorData.objects.values_list('enviro_temprature').order_by('-datetime')[0]).replace('(','').replace(')','').replace(',',''))
+    
+    # get the radiation measurement
+    radrating = float(str(SensorData.objects.values_list('msvhr').order_by('-datetime')[0]).replace('(','').replace(')','').replace(',',''))
+    
+    # get the barmometric pressure
+    pressurerating = float(str(SensorData.objects.values_list('barometer_pressure').order_by('-datetime')[0]).replace('(','').replace(')','').replace(',','')) / 1000.0
+    
+    # add all the sensor data together before calculating the percentage
+    sumofsensors = dustrating + temprating + radrating + pressurerating
+    
+    # calculate the overall danger as a percentage, rounded to 2 decimal places
+    rating = round(sumofsensors / 652 * 100, 2)
+    
     errors = Diagnostic_Issue.objects.order_by('-datetime')[:10]
     errorcount = Diagnostic_Issue.objects.order_by('-datetime')[:10].count()
-    return render (request, 'dashboard_diagnostics.html',{'basicdata':basicdata,'errors':errors,'errorcount':errorcount,'resources':resources,'sensordata':sensordata})
+    return render (request, 'dashboard_diagnostics.html',{'rating':rating,'basicdata':basicdata,'errors':errors,'errorcount':errorcount,'resources':resources,'sensordata':sensordata})

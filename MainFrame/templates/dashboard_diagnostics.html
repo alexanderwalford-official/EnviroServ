@@ -86,11 +86,34 @@
 	{% endfor %}
 	</div>
 	</center>
+    <br>
 	<br>
 	<br>
 	<br>
 	<br>
+	<hr>
+    <h3>Environmental Evaluation</h3>
+	<p>See the general condition of the environment in realtime.</p>
 	<br>
+    <center>
+	<br>
+	{% if rating > 75%}
+	<h3 style="color: red">{{rating}}%</h3>
+	<p>⚠️ This environment is not safe. You should evacuate immediately.</p>
+	{% elif rating > 50 and rating < 76 %}
+	<h3 style="color: orange">{{rating}}%</h3>		
+	<p>Dangerous environment, may cause long term health effects.</p>
+	{% elif rating > 25 and rating < 51 %}
+	<h3 style="color: yellow">{{rating}}%</h3>		
+	<p>Safe environment, typical conditions. Some short term health effects.</p>
+	{% elif rating > 5 and rating < 26 %}
+	<h3 style="color: green">{{rating}}%</h3>
+	<p>Safe environment, better than average. No short term health effects.</p>
+	{% else %}
+	<h3 style="color: green">{{rating}}%</h3>
+    <p>Safe environment, better than average. No short term health effects.</p>
+    {% endif %}
+	</center>
 	<br>
 	<hr>
 	<h3>Detected Issues</h3>
