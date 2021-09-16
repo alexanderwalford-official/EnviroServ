@@ -44,11 +44,11 @@
     </div>
   </div>
 </nav>
-	<div style="padding: 10px; border: solid 1px gray;">
-	<br>
-		<p><b>Welcome back, {{user.first_name}} {{user.last_name}}.</b> {% now "f, d/m/y" %}<a style="float: right" href="../logout">Sign out.</a></p>
-		</div>
-		<br>
+	<div class="alert alert-secondary">
+	<b>ℹ️ Welcome back, {{user.first_name}} {{user.last_name}}</b> {% now "f, d/m/y" %}<a style="float: right" href="../logout">Sign out.</a>
+    </div>
+	<hr>
+    <br>
 	<h1>⚙ Dashboard</h1>
 	<p>EnviroServ important system information.</p>
 	<div style="padding: 4%;">
@@ -57,7 +57,7 @@
 	{% if errorcount > 0 %}
 	<div class="alert alert-danger" role="alert">
 	<br>
-    <p>❌ The system has detected issues. For more information check the diagnostics tab.</p>
+    <p>❌ The system has detected issues. For more information check the <a href="../diagnostics/">diagnostics tab</a>.</p>
     </div>
 	{% else %}
 	<div class="alert alert-success" role="alert">
@@ -73,7 +73,11 @@
 	<hr>
 	<h4>🔧 System Updates</h4>
 	<p>See the latest installed updates to EnviroServ.</p>
-	<div style="padding: 4%;">
+	<div style="padding: 4%; width: 40%">
+	<h5><b>Version 0.1.1 ALPHA (latest)</b></h5>
+	<p>Official public build of EnviroServ.</p>
+	<h6>14:20 16/09/2021</h6>
+	<hr>
 	<h5><b>Version 0.1 ALPHA</b></h5>
 	<p>Official release of EnviroServ.</p>
 	<h6>15:39 05/02/2021</h6>

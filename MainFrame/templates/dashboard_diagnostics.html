@@ -51,10 +51,10 @@
     </div>
   </div>
 </nav>
-	<div style="padding: 10px; border: solid 1px gray;">
-	<br>
-		<p><b>Welcome back, {{user.first_name}} {{user.last_name}}.</b> {% now "f, d/m/y" %}<a style="float: right" href="../logout">Sign out.</a></p>
-		</div>
+	<div class="alert alert-secondary">
+	<b>ℹ️ Welcome back, {{user.first_name}} {{user.last_name}}</b> {% now "f, d/m/y" %}<a style="float: right" href="../logout">Sign out.</a>
+    </div>
+	<hr>
 		<br>
 	<h1>🔧 Diagnostics</h1>
 	<p>See the status of attached sensors and diagnose issues.</p>
@@ -122,10 +122,24 @@
 	<br>
 	<br>
 	{% for errors in errors %}
-	<hr>
+	<div style="padding: 2%;">
 	<h6>{{errors.datetime}}</h6>
-	<p>{{errors.severity}}</p>
-	{{errors.issue}}
+	<h5>ID{{errors.id}}: {{errors.severity}} Severity</h5>
+	{% if errors.issue == "GPS receiver warning: Ensure that the device has a clear view to the sky." %}
+    <center>
+	<img src="https://renovatesoftware.com:140/images/satwarn.png" width="20%">
+	<br>
+	<br>
+	<p>{{errors.issue}}</p>
+	<br>
+	<p><b>TIP:</b> Clouds can effect a clear view to over-head satelites.</p>
+	</center>
+	{% else %}
+	<p>{{errors.issue}}</p>
+	{% endif %}
+	<br>
+	<hr>
+	</div>
 	{% endfor %}
 	{% else %}
 	<p>0 Errors detected, the system is operating as expected.</p>

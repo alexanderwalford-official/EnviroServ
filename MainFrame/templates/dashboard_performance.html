@@ -46,10 +46,10 @@
     </div>
   </div>
 </nav>
-	<div style="padding: 10px; border: solid 1px gray;">
-	<br>
-		<p><b>Welcome back, {{user.first_name}} {{user.last_name}}.</b> {% now "f, d/m/y" %}<a style="float: right" href="../logout">Sign out.</a></p>
-		</div>
+	<div class="alert alert-secondary">
+	<b>ℹ️ Welcome back, {{user.first_name}} {{user.last_name}}</b> {% now "f, d/m/y" %}<a style="float: right" href="../logout">Sign out.</a>
+    </div>
+	<hr>
 		<br>
 	<h1>📉 Performance</h1>
 	<p>See how the system is performing.</p>
