@@ -9,3 +9,4 @@ Official repo for EnviroServ by Alexander Walford, published opensource to be de
 3. ```sudo python3 manage.py migrate```
 4. ```sudo python3 manage.py createsuperuser```
 5. ```sudo python3 manage.py runserver```
+6. ```sudo python3 getData.py```
