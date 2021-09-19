@@ -211,7 +211,7 @@ def main():
     print("Battery Level: " + str(pijuice.status.GetChargeLevel()['data']) + "%")
     
     # get the radiation level
-    print("m sv/hr: " + str(MSVperhour))
+    print("CPH: " + str(MSVperhour))
     
     # Get the SensorHub data range.
     for i in range(TEMP_REG,HUMAN_DETECT + 1):
