@@ -1,7 +1,7 @@
 # EnviroServ
 Official repo for EnviroServ by Alexander Walford, published opensource to be deployed by Renovate Software LTD.
 
-![alt text](https://renovatesoftware.com:140/images/enviroscrn.png)
+![alt text](https://renovatesoftware.com:140/images/EnvirLogoBlack.png)
 
 # Installation / Setup
 1. ```cd EnviroServ```
